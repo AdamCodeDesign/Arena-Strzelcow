@@ -1,0 +1,45 @@
+// creating database and connections between User, Gun, Event and Result
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  guns         Gun[]
+  Results      Result[]
+}
+
+model Gun {
+  id     Int    @id @default(autoincrement())
+  name   String
+  type   String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  id       Int      @id @default(autoincrement())
+  name     String
+  date     DateTime
+  location String
+  Results  Result[]
+}
+
+model Result {
+  id      Int   @id @default(autoincrement())
+  score   Int
+  userId  Int
+  eventId Int
+  user    User  @relation(fields: [userId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id])
+}
