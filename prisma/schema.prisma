@@ -1,5 +1,3 @@
-// creating database and connections between User, Gun, Event and Result
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,30 +7,142 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Event {
+  id           Int           @id @default(autoincrement())
+  name         String
+  date         DateTime
+  location     String
+  description  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  competitions Competition[] @relation("EventCompetitions") // Relacja z konkurencjami
+  participants User[]        @relation("EventParticipants")
+
+  EventParticipants EventParticipants[]
+  Result            Result[]
+  AvgResult         AvgResult[]
+}
+
 model User {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique
-  email        String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
-  guns         Gun[]
-  Results      Result[]
+  id                      Int                       @id @default(autoincrement())
+  username                String
+  email                   String                    @unique
+  passwordHash            String
+  events                  Event[]                   @relation("EventParticipants") // Relacja z wydarzeniami
+  competitions            Competition[]             @relation("CompetitionParticipants") // Relacja z konkurencjami
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  EventParticipants       EventParticipants[]
+  CompetitionParticipants CompetitionParticipants[]
+  Result                  Result[]
+  AvgResult               AvgResult[]
+}
+
+model Competition {
+  id                      Int                       @id @default(autoincrement())
+  name                    String // Nazwa konkurencji
+  eventId                 Int // ID wydarzenia, do którego należy konkurencja
+  event                   Event                     @relation("EventCompetitions", fields: [eventId], references: [id])
+  type                    String // np strzelanie dynamiczne
+  distance                Int
+  position                String
+  scope                   Int
+  participants            User[]                    @relation("CompetitionParticipants") // Uczestnicy konkurencji
+  createdAt               DateTime                  @default(now())
+  CompetitionParticipants CompetitionParticipants[]
+}
+
+model EventParticipants {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  userId    Int
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model CompetitionParticipants {
+  id            Int         @id @default(autoincrement())
+  competitionId Int
+  userId        Int
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
 }
 
 model Gun {
-  id     Int    @id @default(autoincrement())
-  name   String
-  type   String
-  userId Int
-  user   User   @relation(fields: [userId], references: [id])
+  id           Int           @id @default(autoincrement())
+  name         String
+  type         String
+  manufacturer String
+  scopes      Scope[]      @relation("GunScopes") // Relacja z celownikami
+  silencers    Silencer[]
+  compensators Compensator[]
+  grips        Grip[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Magazine     Magazine[]
 }
 
-model Event {
-  id       Int      @id @default(autoincrement())
-  name     String
-  date     DateTime
-  location String
-  Results  Result[]
+model Scope {
+  id            Int      @id @default(autoincrement())
+  name          String   // Nazwa celownika
+  type          String   // Typ celownika (np. "Kolimatorowy", "Teleskopowy")
+  magnification Float?   // Powiększenie celownika
+  lensDiameter  Float?   // Średnica soczewki
+  length        Float?   // Długość celownika
+  weight        Float?   // Waga celownika
+  description   String?  // Opcjonalny opis celownika
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  guns          Gun[]     @relation("GunScopes") // Relacja do wielu broni
+
+}
+
+
+model Silencer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  length    Float
+  weight    Float
+  material  String
+  gunId     Int
+  gun       Gun      @relation(fields: [gunId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Compensator {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  material  String
+  gunId     Int
+  gun       Gun      @relation(fields: [gunId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Grip {
+  id        Int      @id @default(autoincrement())
+  name      String
+  material  String
+  weight    Float
+  gunId     Int
+  gun       Gun      @relation(fields: [gunId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Magazine {
+  id        Int      @id @default(autoincrement())
+  name      String
+  material  String
+  weight    Float
+  gunId     Int
+  gun       Gun      @relation(fields: [gunId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Result {
@@ -40,6 +150,17 @@ model Result {
   score   Int
   userId  Int
   eventId Int
-  user    User  @relation(fields: [userId], references: [id])
   event   Event @relation(fields: [eventId], references: [id])
+  user    User  @relation(fields: [userId], references: [id])
+}
+
+model AvgResult {
+  id           Int      @id @default(autoincrement())
+  averageScore Float
+  userId       Int
+  eventId      Int
+  user         User     @relation(fields: [userId], references: [id])
+  event        Event    @relation(fields: [eventId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

@@ -4,10 +4,19 @@ import prisma from "@/lib/prisma"; // Zaimportuj instancję Prisma
 // Fetching USERS (READ)
 export async function GET() {
     try {
-        const users = await prisma.user.findMany(); // Pobieramy wszystkich użytkowników
+        const users = await prisma.user.findMany({
+            include: {
+                events: true,
+                competitions: true,
+                EventParticipants: true,
+                CompetitionParticipants: true,
+                Result: true,
+                AvgResult: true,
+            },
+        }); // Pobieramy wszystkich użytkowników
         return NextResponse.json(users);
     } catch (error) {
-        console.log("ERROR",error)
+        console.log("ERROR", error);
         return NextResponse.json(
             { error: "Something went wrong! I can not GET users" },
             { status: 500 },
@@ -18,9 +27,9 @@ export async function GET() {
 // Creating USER (CREATE)
 export async function POST(request: Request) {
     try {
-        const { username, email, password_hash } = await request.json(); // Oczekujemy tych danych z body
+        const { username, email, passwordHash } = await request.json(); // Oczekujemy tych danych z body
 
-        if (!username || !email || !password_hash) {
+        if (!username || !email || !passwordHash) {
             return NextResponse.json(
                 { error: "Missing required fields" },
                 { status: 400 },
@@ -31,12 +40,13 @@ export async function POST(request: Request) {
             data: {
                 username,
                 email,
-                password_hash,
+                passwordHash,
             },
         });
 
         return NextResponse.json(newUser, { status: 201 });
     } catch (error) {
+        console.log("ERROR:Failed to create user", error);
         return NextResponse.json(
             { error: "Failed to create user" },
             { status: 500 },
@@ -47,9 +57,9 @@ export async function POST(request: Request) {
 // Edycja użytkownika (UPDATE)
 export async function PUT(request: Request) {
     try {
-        const { id, username, email, password_hash } = await request.json();
+        const { id, username, email, passwordHash } = await request.json();
 
-        if (!id || !username || !email || !password_hash) {
+        if (!id || !username || !email || !passwordHash) {
             return NextResponse.json(
                 { error: "Missing required fields" },
                 { status: 400 },
@@ -58,11 +68,12 @@ export async function PUT(request: Request) {
 
         const updatedUser = await prisma.user.update({
             where: { id },
-            data: { username, email, password_hash },
+            data: { username, email, passwordHash },
         });
 
         return NextResponse.json(updatedUser);
     } catch (error) {
+        console.log("ERROR:Failed to update user", error);
         return NextResponse.json(
             { error: "Failed to update user" },
             { status: 500 },
@@ -88,6 +99,7 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json(deletedUser);
     } catch (error) {
+        console.log("ERROR: Failed to delete user", error);
         return NextResponse.json(
             { error: "Failed to delete user" },
             { status: 500 },
