@@ -1,27 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-//Get by ID (READ)
+// Get by ID (READ)
 export async function GET(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const { id } = params;
+        const eventId = Number(params.id);
 
-        console.log("Received ID:", id);
-
-        const eventId = parseInt(id);
-
-        console.log("Converted eventId:", eventId);
-
-        // Jeżeli id jest NaN, zwróć błąd
         if (isNaN(eventId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
         const event = await prisma.event.findUnique({
-            where: { id: eventId }, // Przekazanie poprawnie skonwertowanego id
+            where: { id: eventId },
             include: {
                 competitions: true,
                 participants: true,
@@ -54,10 +47,21 @@ export async function PUT(
     { params }: { params: { id: string } },
 ) {
     try {
-        const { id } = params; // Poprawnie pobieramy ID
+        const eventId = Number(params.id);
 
-        if (!id || isNaN(Number(id))) {
+        if (isNaN(eventId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        }
+
+        const existingEvent = await prisma.event.findUnique({
+            where: { id: eventId },
+        });
+
+        if (!existingEvent) {
+            return NextResponse.json(
+                { error: "Event not found" },
+                { status: 404 },
+            );
         }
 
         const {
@@ -70,7 +74,7 @@ export async function PUT(
         } = await request.json();
 
         const updatedEvent = await prisma.event.update({
-            where: { id: Number(id) },
+            where: { id: eventId },
             data: {
                 name,
                 date: date ? new Date(date) : undefined,
@@ -78,7 +82,6 @@ export async function PUT(
                 description,
                 competitions: competitions
                     ? {
-                          set: [],
                           connect: competitions.map((compId: number) => ({
                               id: compId,
                           })),
@@ -86,7 +89,6 @@ export async function PUT(
                     : undefined,
                 participants: participants
                     ? {
-                          set: [],
                           connect: participants.map((userId: number) => ({
                               id: userId,
                           })),
@@ -112,9 +114,21 @@ export async function DELETE(
     { params }: { params: { id: string } },
 ) {
     try {
-        const eventId = parseInt(params.id);
+        const eventId = Number(params.id);
+
         if (isNaN(eventId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        }
+
+        const event = await prisma.event.findUnique({
+            where: { id: eventId },
+        });
+
+        if (!event) {
+            return NextResponse.json(
+                { error: "Event not found" },
+                { status: 404 },
+            );
         }
 
         await prisma.event.delete({

@@ -47,5 +47,5 @@ CRUD
 
 Postęp
 1. skonczyłem Event CRUD
-2. Zaczałem robic Competition CRUD
-3. Poprawiam User Crud na dynamiczne id
+2. skonczylem user CRUD
+3. Zaczałem robic Competition CRUD

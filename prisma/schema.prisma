@@ -41,8 +41,8 @@ model User {
 model Competition {
   id                      Int                       @id @default(autoincrement())
   name                    String // Nazwa konkurencji
-  eventId                 Int // ID wydarzenia, do którego należy konkurencja
-  event                   Event                     @relation("EventCompetitions", fields: [eventId], references: [id])
+  eventId                 Int? // ID wydarzenia, do którego należy konkurencja
+  event                   Event?                     @relation("EventCompetitions", fields: [eventId], references: [id])
   type                    String // np strzelanie dynamiczne
   distance                Int
   position                String
