@@ -36,14 +36,29 @@ export async function POST(request: Request) {
     }
 }
 
-// getting all events
+// GET All events (READ)
 export async function GET() {
     try {
-        const event = await prisma.event.findMany();
+        const events = await prisma.event.findMany({
+            include: {
+                competitions: true,
+                participants: true,
+                EventParticipants: true,
+                Result: true,
+                AvgResult: true,
+            },
+        });
 
-        return NextResponse.json(event);
+        if (events.length === 0) {
+            return NextResponse.json(
+                { message: "No events found" },
+                { status: 404 },
+            );
+        }
+
+        return NextResponse.json(events);
     } catch (error) {
-        console.log("ERROR: I can not GET ALL events", error);
+        console.error("ERROR: Unable to get all events", error); // Użyj console.error
         return NextResponse.json(
             { error: "I can not GET ALL events" },
             { status: 500 },

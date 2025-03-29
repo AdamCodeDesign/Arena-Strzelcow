@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+//Get by ID (READ)
 export async function GET(
     request: Request,
     { params }: { params: { id: string } },
@@ -8,13 +9,10 @@ export async function GET(
     try {
         const { id } = params;
 
-        // Logowanie przekazywanego ID
         console.log("Received ID:", id);
 
-        // Konwertowanie id na liczbę całkowitą
         const eventId = parseInt(id);
 
-        // Logowanie po konwersji
         console.log("Converted eventId:", eventId);
 
         // Jeżeli id jest NaN, zwróć błąd
@@ -27,6 +25,9 @@ export async function GET(
             include: {
                 competitions: true,
                 participants: true,
+                EventParticipants: true,
+                Result: true,
+                AvgResult: true,
             },
         });
 
@@ -47,7 +48,7 @@ export async function GET(
     }
 }
 
-// PUT - Update Event
+// PUT - Update Event by ID
 export async function PUT(
     request: Request,
     { params }: { params: { id: string } },
@@ -105,7 +106,7 @@ export async function PUT(
     }
 }
 
-// DELETE - Remove Event
+// DELETE - Remove Event by ID
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } },
