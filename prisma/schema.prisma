@@ -8,19 +8,16 @@ datasource db {
 }
 
 model Event {
-  id           Int           @id @default(autoincrement())
-  name         String
-  date         DateTime
-  location     String
-  description  String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  competitions Competition[] @relation("EventCompetitions") // Relacja z konkurencjami
-  participants User[]        @relation("EventParticipants")
-
+  id                Int                 @id @default(autoincrement())
+  name              String
+  date              DateTime
+  location          String
+  description       String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  competitions      Competition[]       @relation("EventCompetitions") // Relacja z konkurencjami
+  participants      User[]              @relation("EventParticipants")
   EventParticipants EventParticipants[]
-  Result            Result[]
-  AvgResult         AvgResult[]
 }
 
 model User {
@@ -42,12 +39,15 @@ model Competition {
   id                      Int                       @id @default(autoincrement())
   name                    String // Nazwa konkurencji
   eventId                 Int? // ID wydarzenia, do którego należy konkurencja
-  event                   Event?                     @relation("EventCompetitions", fields: [eventId], references: [id])
+  event                   Event?                    @relation("EventCompetitions", fields: [eventId], references: [id])
   type                    String // np strzelanie dynamiczne
+  gunId                   Int?
+  gun                     Gun?    @relation(fields: [gunId], references: [id])
   distance                Int
   position                String
   scope                   Int
   participants            User[]                    @relation("CompetitionParticipants") // Uczestnicy konkurencji
+  results                 Result[]
   createdAt               DateTime                  @default(now())
   CompetitionParticipants CompetitionParticipants[]
 }
@@ -71,34 +71,38 @@ model CompetitionParticipants {
 }
 
 model Gun {
-  id           Int           @id @default(autoincrement())
-  name         String
-  type         String
-  manufacturer String
-  scopes      Scope[]      @relation("GunScopes") // Relacja z celownikami
-  silencers    Silencer[]
-  compensators Compensator[]
-  grips        Grip[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  Magazine     Magazine[]
+  id            Int         @id @default(autoincrement())
+  name          String
+  type          String
+  caliber       String
+  manufacturer  String
+  scopes        Scope[]     @relation("GunScopes") // Relacja z celownikami
+  silencerId    Int?
+  silencer      Silencer?    @relation(fields: [silencerId], references: [id])
+  grips         Grip[]
+  magazineId    Int?
+  magazine      Magazine?   @relation(fields: [magazineId], references: [id])
+  compensatorId Int?
+  compensator   Compensator? @relation(fields: [compensatorId], references: [id])
+  competitions  Competition[] 
+  gunScore      Result[]    @relation("GunResult")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Scope {
   id            Int      @id @default(autoincrement())
-  name          String   // Nazwa celownika
-  type          String   // Typ celownika (np. "Kolimatorowy", "Teleskopowy")
-  magnification Float?   // Powiększenie celownika
-  lensDiameter  Float?   // Średnica soczewki
-  length        Float?   // Długość celownika
-  weight        Float?   // Waga celownika
-  description   String?  // Opcjonalny opis celownika
+  name          String // Nazwa celownika
+  type          String // Typ celownika (np. "Kolimatorowy", "Teleskopowy")
+  magnification Float? // Powiększenie celownika
+  lensDiameter  Float? // Średnica soczewki
+  length        Float? // Długość celownika
+  weight        Float? // Waga celownika
+  description   String? // Opcjonalny opis celownika
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  guns          Gun[]     @relation("GunScopes") // Relacja do wielu broni
-
+  guns          Gun[]    @relation("GunScopes") // Relacja do wielu broni
 }
-
 
 model Silencer {
   id        Int      @id @default(autoincrement())
@@ -106,8 +110,7 @@ model Silencer {
   length    Float
   weight    Float
   material  String
-  gunId     Int
-  gun       Gun      @relation(fields: [gunId], references: [id])
+  gun       Gun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -117,8 +120,7 @@ model Compensator {
   name      String
   type      String
   material  String
-  gunId     Int
-  gun       Gun      @relation(fields: [gunId], references: [id])
+  gun       Gun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -139,28 +141,27 @@ model Magazine {
   name      String
   material  String
   weight    Float
-  gunId     Int
-  gun       Gun      @relation(fields: [gunId], references: [id])
+  gun       Gun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Result {
-  id      Int   @id @default(autoincrement())
-  score   Int
-  userId  Int
-  eventId Int
-  event   Event @relation(fields: [eventId], references: [id])
-  user    User  @relation(fields: [userId], references: [id])
+  id            Int         @id @default(autoincrement())
+  score         Int
+  userId        Int
+  gunId         Int
+  competitionId Int
+  user          User        @relation(fields: [userId], references: [id])
+  gun           Gun         @relation("GunResult", fields: [gunId], references: [id])
+  competition   Competition @relation(fields: [competitionId], references: [id])
 }
 
 model AvgResult {
   id           Int      @id @default(autoincrement())
   averageScore Float
   userId       Int
-  eventId      Int
   user         User     @relation(fields: [userId], references: [id])
-  event        Event    @relation(fields: [eventId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
