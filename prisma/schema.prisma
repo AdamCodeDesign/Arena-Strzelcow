@@ -98,7 +98,6 @@ model Scope {
   lensDiameter  Float? // Średnica soczewki
   length        Float? // Długość celownika
   weight        Float? // Waga celownika
-  description   String? // Opcjonalny opis celownika
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   guns          Gun[]    @relation("GunScopes") // Relacja do wielu broni
