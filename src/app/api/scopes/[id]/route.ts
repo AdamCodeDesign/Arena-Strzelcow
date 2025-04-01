@@ -7,36 +7,31 @@ export async function GET(
     { params }: { params: { id: string } },
 ) {
     try {
-        const gunId = Number(params.id);
+        const scopeId = Number(params.id);
 
-        if (isNaN(gunId)) {
+        if (isNaN(scopeId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        const gun = await prisma.gun.findUnique({
-            where: { id: gunId },
+        const scope = await prisma.scope.findUnique({
+            where: { id: scopeId },
             include: {
-                silencer: true,
-                compensator: true,
-                scopes: true,
-                grips: true,
-                magazine: true,
-                competitions: true, // Zwracamy powiązaną konkurencję
+                guns: true,
             },
         });
 
-        if (!gun) {
+        if (!scope) {
             return NextResponse.json(
-                { error: "Gun not found" },
+                { error: "Scope not found" },
                 { status: 404 },
             );
         }
 
-        return NextResponse.json(gun);
+        return NextResponse.json(scope);
     } catch (error) {
-        console.error("Error fetching gun:", error);
+        console.error("Error fetching scope:", error);
         return NextResponse.json(
-            { error: "Failed to fetch gun" },
+            { error: "Failed to fetch scope" },
             { status: 500 },
         );
     }
@@ -48,139 +43,92 @@ export async function PUT(
     { params }: { params: { id: string } },
 ) {
     try {
-        const gunId = Number(params.id);
+        const scopeId = Number(params.id);
         const body = await request.json();
-        const {
-            name,
-            type,
-            caliber,
-            manufacturer,
-            magazineId,
-            silencerId,
-            compensatorId,
-            scopes,
-            grips,
-            gunScore, // Lista wyników
-        } = body;
+        const { name, type, magnification, lensDiameter, length, weight } =
+            body;
 
-        // Sprawdzenie, czy ID broni jest poprawne
-        if (isNaN(gunId)) {
+        // Sprawdzenie, czy ID scope jest poprawne
+        if (isNaN(scopeId)) {
             return NextResponse.json(
-                { error: "Invalid gun ID" },
+                { error: "Invalid scope ID" },
                 { status: 400 },
             );
         }
 
-        // Sprawdzenie, czy broń istnieje
-        const existingGun = await prisma.gun.findUnique({
-            where: { id: gunId },
+        // Sprawdzenie, czy scope istnieje
+        const existingScope = await prisma.scope.findUnique({
+            where: { id: scopeId },
         });
-        if (!existingGun) {
+        if (!existingScope) {
             return NextResponse.json(
-                { error: "Gun not found" },
+                { error: "Scope not found" },
                 { status: 404 },
             );
         }
 
-        // Aktualizacja broni
-        const updatedGun = await prisma.gun.update({
-            where: { id: gunId },
+        // Aktualizacja scope
+        const updatedScope = await prisma.scope.update({
+            where: { id: scopeId },
             data: {
-                name: name?.trim(),
-                type: type?.trim(),
-                caliber: caliber?.trim(),
-                manufacturer: manufacturer?.trim(),
-                magazineId: magazineId ?? null, // Może być null
-                silencerId: silencerId ?? null,
-                compensatorId: compensatorId ?? null,
-                scopes: scopes
-                    ? {
-                          connect: scopes.map((scopeId: number) => ({
-                              id: scopeId,
-                          })),
-                      }
-                    : undefined,
-                grips: grips
-                    ? {
-                          connect: grips.map((gripId: number) => ({
-                              id: gripId,
-                          })),
-                      }
-                    : undefined,
-                gunScore: gunScore
-                    ? {
-                          upsert: gunScore.map(
-                              (result: {
-                                  id?: number;
-                                  score: number;
-                                  competitionId: number;
-                              }) => ({
-                                  where: { id: result.id ?? 0 }, // Jeśli ID istnieje, aktualizuje
-                                  update: { score: result.score }, // Aktualizacja wyniku
-                                  create: {
-                                      score: result.score,
-                                      competitionId: result.competitionId,
-                                  }, // Tworzenie nowego wyniku
-                              }),
-                          ),
-                      }
-                    : undefined,
+                name,
+                type,
+                magnification: Number(magnification),
+                lensDiameter: Number(lensDiameter),
+                length: Number(length),
+                weight: Number(weight),
             },
             include: {
-                silencer: true,
-                compensator: true,
-                scopes: true,
-                grips: true,
-                magazine: true,
-                gunScore: true, // Pobranie wyników
+                guns: true,
             },
         });
 
-        return NextResponse.json(updatedGun, { status: 200 });
+        return NextResponse.json(updatedScope, { status: 200 });
     } catch (error) {
-        console.error("Error updating gun:", error);
+        console.error("Error updating scope:", error);
         return NextResponse.json(
-            { error: "Failed to update gun" },
+            { error: "Failed to update scope" },
             { status: 500 },
         );
     }
 }
 
-// DELETE - Remove Gun by ID
+// Delete scope by ID
+
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const { id } = await params;
-        const gunId = Number(id);
+        const scopeId = Number(params.id);
 
-        if (isNaN(gunId)) {
-            return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        if (isNaN(scopeId)) {
+            return NextResponse.json(
+                { error: "Invalid scopeId" },
+                { status: 400 },
+            );
         }
 
-        const gun = await prisma.gun.findUnique({
-            where: { id: gunId },
+        const scope = await prisma.scope.findUnique({
+            where: { id: scopeId },
         });
 
-        if (!gun) {
+        if (!scope) {
             return NextResponse.json(
-                { error: "gun not found" },
+                { error: "I can NOT find scope" },
                 { status: 404 },
             );
         }
 
-        await prisma.gun.delete({
-            where: { id: gunId },
+        await prisma.scope.delete({
+            where: { id: scopeId },
         });
 
-        return NextResponse.json({
-            message: "Gun deleted successfully",
-        });
+        return NextResponse.json({ message: "Scope deleted successful" });
     } catch (error) {
-        console.error("ERROR: Failed to delete Gun", error);
+        console.log("ERROR: Failed to DELETE scope", error);
         return NextResponse.json(
-            { error: "Failed to delete Gun" },
+            { error: "Failed to DELETE scope" },
             { status: 500 },
         );
     }
