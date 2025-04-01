@@ -59,9 +59,9 @@ export async function POST(request: Request) {
                 type,
                 caliber,
                 manufacturer,
-                magazineId: magazineId || null,
-                silencerId: silencerId || null, // Tłumik jest opcjonalny
-                compensatorId: compensatorId || null, // Kompensator jest opcjonalny
+                magazineId: magazineId ?? null,
+                silencerId: silencerId ?? null, // Tłumik jest opcjonalny
+                compensatorId: compensatorId ?? null, // Kompensator jest opcjonalny
                 scopes: scopes
                     ? {
                           connect: scopes.map((scopeId: number) => ({
