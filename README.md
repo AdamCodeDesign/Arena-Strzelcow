@@ -47,5 +47,7 @@ Postęp
 
 1. skonczyłem Event CRUD
 2. skonczylem user CRUD
-3. Zaczałem robic Competition CRUD
-4. Zrobiony POST i GET all w GUN, zostalo GET by ID, PUT i Delete dynamicznie
+3. Competition CRUD zrobiony
+4. GUN CRUD zrobiony
+5. Scope CRUD zrobiony
+6. Zaczalem Silencer - POST zrobiony

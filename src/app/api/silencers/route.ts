@@ -1,44 +1,34 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// creating scope (POST)
+// creating silencer (POST)
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, type, magnification, lensDiameter, length, weight } =
-            body;
+        const { name } = body;
 
-        const missingFields = [];
-        if (!name) missingFields.push("name");
-        if (!type) missingFields.push("type");
-
-        if (missingFields.length > 0) {
+        if (!name) {
             return NextResponse.json(
-                { error: "Missing or invalid fields", fields: missingFields },
+                { error: "Missing name" },
                 { status: 400 },
             );
         }
 
-        // Creating scope
-        const newScope = await prisma.scope.create({
+        // Creating silencer
+        const newSilencer = await prisma.silencer.create({
             data: {
                 name,
-                type,
-                magnification: Number(magnification),
-                lensDiameter: Number(lensDiameter),
-                length: Number(length),
-                weight: Number(weight),
             },
             include: {
                 guns: true,
             },
         });
 
-        return NextResponse.json(newScope, { status: 201 });
+        return NextResponse.json(newSilencer, { status: 201 });
     } catch (error) {
-        console.error("Error creating scope:", error);
+        console.error("Error creating silencer:", error);
         return NextResponse.json(
-            { error: "Failed to create scope" },
+            { error: "Failed to create silencer" },
             { status: 500 },
         );
     }

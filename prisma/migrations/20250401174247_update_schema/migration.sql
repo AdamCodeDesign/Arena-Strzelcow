@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Silencer" ALTER COLUMN "length" DROP NOT NULL,
+ALTER COLUMN "weight" DROP NOT NULL;

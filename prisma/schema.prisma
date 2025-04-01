@@ -15,7 +15,7 @@ model Event {
   description       String
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
-  competitions      Competition[]       @relation("EventCompetitions") // Relacja z konkurencjami
+  competitions      Competition[]       @relation("EventCompetitions") 
   participants      User[]              @relation("EventParticipants")
   EventParticipants EventParticipants[]
 }
@@ -25,8 +25,8 @@ model User {
   username                String
   email                   String                    @unique
   passwordHash            String
-  events                  Event[]                   @relation("EventParticipants") // Relacja z wydarzeniami
-  competitions            Competition[]             @relation("CompetitionParticipants") // Relacja z konkurencjami
+  events                  Event[]                   @relation("EventParticipants") 
+  competitions            Competition[]             @relation("CompetitionParticipants")
   createdAt               DateTime                  @default(now())
   updatedAt               DateTime                  @updatedAt
   EventParticipants       EventParticipants[]
@@ -37,16 +37,16 @@ model User {
 
 model Competition {
   id                      Int                       @id @default(autoincrement())
-  name                    String // Nazwa konkurencji
-  eventId                 Int? // ID wydarzenia, do którego należy konkurencja
+  name                    String
+  eventId                 Int?
   event                   Event?                    @relation("EventCompetitions", fields: [eventId], references: [id])
-  type                    String // np strzelanie dynamiczne
+  type                    String
   gunId                   Int?
-  gun                     Gun?    @relation(fields: [gunId], references: [id])
+  gun                     Gun?                      @relation(fields: [gunId], references: [id])
   distance                Int
   position                String
   scope                   Int
-  participants            User[]                    @relation("CompetitionParticipants") // Uczestnicy konkurencji
+  participants            User[]                    @relation("CompetitionParticipants")
   results                 Result[]
   createdAt               DateTime                  @default(now())
   CompetitionParticipants CompetitionParticipants[]
@@ -71,23 +71,23 @@ model CompetitionParticipants {
 }
 
 model Gun {
-  id            Int         @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   name          String
   type          String
   caliber       String
   manufacturer  String
-  scopes        Scope[]     @relation("GunScopes") // Relacja z celownikami
+  scopes        Scope[]       @relation("GunScopes") // Relacja z celownikami
   silencerId    Int?
-  silencer      Silencer?    @relation(fields: [silencerId], references: [id])
+  silencer      Silencer?     @relation(fields: [silencerId], references: [id])
   grips         Grip[]
   magazineId    Int?
-  magazine      Magazine?   @relation(fields: [magazineId], references: [id])
+  magazine      Magazine?     @relation(fields: [magazineId], references: [id])
   compensatorId Int?
-  compensator   Compensator? @relation(fields: [compensatorId], references: [id])
-  competitions  Competition[] 
-  gunScore      Result[]    @relation("GunResult")
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  compensator   Compensator?  @relation(fields: [compensatorId], references: [id])
+  competitions  Competition[]
+  gunScore      Result[]      @relation("GunResult")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model Scope {
@@ -98,18 +98,17 @@ model Scope {
   lensDiameter  Float? // Średnica soczewki
   length        Float? // Długość celownika
   weight        Float? // Waga celownika
+  guns          Gun[]    @relation("GunScopes") // Relacja do wielu broni
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  guns          Gun[]    @relation("GunScopes") // Relacja do wielu broni
 }
 
 model Silencer {
   id        Int      @id @default(autoincrement())
   name      String
-  length    Float
-  weight    Float
-  material  String
-  gun       Gun[]
+  length    Int?
+  weight    Int?
+  guns      Gun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
