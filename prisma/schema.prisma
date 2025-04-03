@@ -116,9 +116,9 @@ model Silencer {
 model Compensator {
   id        Int      @id @default(autoincrement())
   name      String
-  type      String
-  material  String
-  gun       Gun[]
+  type      String   // boczna redukcja, gorna itp
+  material  String?
+  guns       Gun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
