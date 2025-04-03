@@ -76,9 +76,6 @@ export async function POST(request: Request) {
                           })),
                       } // Łączenie z celownikami
                     : undefined,
-                competitions: {
-                    connect: { id: competitionId }, // Przypisanie broni do konkurencji
-                },
             },
             include: {
                 silencer: true,
