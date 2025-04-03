@@ -7,128 +7,122 @@ export async function GET(
     { params }: { params: { id: string } },
 ) {
     try {
-        const scopeId = Number(params.id);
+        const silencerId = Number(params.id);
 
-        if (isNaN(scopeId)) {
+        if (isNaN(silencerId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        const scope = await prisma.scope.findUnique({
-            where: { id: scopeId },
+        const silencer = await prisma.silencer.findUnique({
+            where: { id: silencerId },
             include: {
                 guns: true,
             },
         });
 
-        if (!scope) {
+        if (!silencer) {
             return NextResponse.json(
-                { error: "Scope not found" },
+                { error: "silencer not found" },
                 { status: 404 },
             );
         }
 
-        return NextResponse.json(scope);
+        return NextResponse.json(silencer);
     } catch (error) {
-        console.error("Error fetching scope:", error);
+        console.error("Error fetching silencer:", error);
         return NextResponse.json(
-            { error: "Failed to fetch scope" },
+            { error: "Failed to fetch silencer" },
             { status: 500 },
         );
     }
 }
 
-// PUT - Update gun by ID
+// PUT - Update silencer by ID
 export async function PUT(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const scopeId = Number(params.id);
+        const silencerId = Number(params.id);
         const body = await request.json();
-        const { name, type, magnification, lensDiameter, length, weight } =
-            body;
+        const { name } = body;
 
-        // Sprawdzenie, czy ID scope jest poprawne
-        if (isNaN(scopeId)) {
+        // Sprawdzenie, czy ID silencer jest poprawne
+        if (isNaN(silencerId)) {
             return NextResponse.json(
-                { error: "Invalid scope ID" },
+                { error: "Invalid silencer ID" },
                 { status: 400 },
             );
         }
 
-        // Sprawdzenie, czy scope istnieje
-        const existingScope = await prisma.scope.findUnique({
-            where: { id: scopeId },
+        // Sprawdzenie, czy silencer istnieje
+        const existingSilencer = await prisma.silencer.findUnique({
+            where: { id: silencerId },
         });
-        if (!existingScope) {
+        if (!existingSilencer) {
             return NextResponse.json(
-                { error: "Scope not found" },
+                { error: "silencer not found" },
                 { status: 404 },
             );
         }
 
-        // Aktualizacja scope
-        const updatedScope = await prisma.scope.update({
-            where: { id: scopeId },
+        // Aktualizacja silencer
+        const updatedSilencer = await prisma.silencer.update({
+            where: { id: silencerId },
             data: {
                 name,
-                type,
-                magnification: Number(magnification),
-                lensDiameter: Number(lensDiameter),
-                length: Number(length),
-                weight: Number(weight),
             },
             include: {
                 guns: true,
             },
         });
 
-        return NextResponse.json(updatedScope, { status: 200 });
+        return NextResponse.json(updatedSilencer, { status: 200 });
     } catch (error) {
-        console.error("Error updating scope:", error);
+        console.error("Error updating silencer:", error);
         return NextResponse.json(
-            { error: "Failed to update scope" },
+            { error: "Failed to update silencer" },
             { status: 500 },
         );
     }
 }
 
-// Delete scope by ID
+// Delete silencer by ID
 
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const scopeId = Number(params.id);
+        const silencerId = Number(params.id);
 
-        if (isNaN(scopeId)) {
+        if (isNaN(silencerId)) {
             return NextResponse.json(
-                { error: "Invalid scopeId" },
+                { error: "Invalid silencerId" },
                 { status: 400 },
             );
         }
 
-        const scope = await prisma.scope.findUnique({
-            where: { id: scopeId },
+        const silencer = await prisma.silencer.findUnique({
+            where: { id: silencerId },
         });
 
-        if (!scope) {
+        if (!silencer) {
             return NextResponse.json(
-                { error: "I can NOT find scope" },
+                { error: "I can NOT find silencer" },
                 { status: 404 },
             );
         }
 
-        await prisma.scope.delete({
-            where: { id: scopeId },
+        await prisma.silencer.delete({
+            where: { id: silencerId },
         });
 
-        return NextResponse.json({ message: "Scope deleted successful" });
+        return NextResponse.json({ message: "silencer deleted successful" });
     } catch (error) {
-        console.log("ERROR: Failed to DELETE scope", error);
+        console.log("ERROR: Failed to DELETE silencer", error);
         return NextResponse.json(
-            { error: "Failed to DELETE scope" },
+            { error: "Failed to DELETE silencer" },
             { status: 500 },
         );
     }
