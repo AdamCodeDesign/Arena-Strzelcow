@@ -7,122 +7,124 @@ export async function GET(
     { params }: { params: { id: string } },
 ) {
     try {
-        const silencerId = Number(params.id);
+        const compensatorId = Number(params.id);
 
-        if (isNaN(silencerId)) {
+        if (isNaN(compensatorId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        const silencer = await prisma.silencer.findUnique({
-            where: { id: silencerId },
+        const compensator = await prisma.compensator.findUnique({
+            where: { id: compensatorId },
             include: {
                 guns: true,
             },
         });
 
-        if (!silencer) {
+        if (!compensator) {
             return NextResponse.json(
-                { error: "silencer not found" },
+                { error: "compensator not found" },
                 { status: 404 },
             );
         }
 
-        return NextResponse.json(silencer);
+        return NextResponse.json(compensator);
     } catch (error) {
-        console.error("Error fetching silencer:", error);
+        console.error("Error fetching compensator:", error);
         return NextResponse.json(
-            { error: "Failed to fetch silencer" },
+            { error: "Failed to fetch compensator" },
             { status: 500 },
         );
     }
 }
 
-// PUT - Update silencer by ID
+// PUT - Update compensator by ID
 export async function PUT(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const silencerId = Number(params.id);
+        const compensatorId = Number(params.id);
         const body = await request.json();
-        const { name } = body;
+        const { name, type, material } = body;
 
-        // Sprawdzenie, czy ID silencer jest poprawne
-        if (isNaN(silencerId)) {
+        // Sprawdzenie, czy ID compensator jest poprawne
+        if (isNaN(compensatorId)) {
             return NextResponse.json(
-                { error: "Invalid silencer ID" },
+                { error: "Invalid compensator ID" },
                 { status: 400 },
             );
         }
 
-        // Sprawdzenie, czy silencer istnieje
-        const existingSilencer = await prisma.silencer.findUnique({
-            where: { id: silencerId },
+        // Sprawdzenie, czy compensator istnieje
+        const existingCompensator = await prisma.compensator.findUnique({
+            where: { id: compensatorId },
         });
-        if (!existingSilencer) {
+        if (!existingCompensator) {
             return NextResponse.json(
-                { error: "silencer not found" },
+                { error: "compensator not found" },
                 { status: 404 },
             );
         }
 
-        // Aktualizacja silencer
-        const updatedSilencer = await prisma.silencer.update({
-            where: { id: silencerId },
+        // Aktualizacja compensator
+        const updatedCompensator = await prisma.compensator.update({
+            where: { id: compensatorId },
             data: {
                 name,
+                type,
+                material: material ?? null,
             },
             include: {
                 guns: true,
             },
         });
 
-        return NextResponse.json(updatedSilencer, { status: 200 });
+        return NextResponse.json(updatedCompensator, { status: 200 });
     } catch (error) {
-        console.error("Error updating silencer:", error);
+        console.error("Error updating compensator:", error);
         return NextResponse.json(
-            { error: "Failed to update silencer" },
+            { error: "Failed to update compensator" },
             { status: 500 },
         );
     }
 }
 
-// Delete silencer by ID
+// Delete compensator by ID
 
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const silencerId = Number(params.id);
+        const compensatorId = Number(params.id);
 
-        if (isNaN(silencerId)) {
+        if (isNaN(compensatorId)) {
             return NextResponse.json(
-                { error: "Invalid silencerId" },
+                { error: "Invalid compensatorId" },
                 { status: 400 },
             );
         }
 
-        const silencer = await prisma.silencer.findUnique({
-            where: { id: silencerId },
+        const compensator = await prisma.compensator.findUnique({
+            where: { id: compensatorId },
         });
 
-        if (!silencer) {
+        if (!compensator) {
             return NextResponse.json(
-                { error: "I can NOT find silencer" },
+                { error: "I can NOT find compensator" },
                 { status: 404 },
             );
         }
 
-        await prisma.silencer.delete({
-            where: { id: silencerId },
+        await prisma.compensator.delete({
+            where: { id: compensatorId },
         });
 
-        return NextResponse.json({ message: "silencer deleted successful" });
+        return NextResponse.json({ message: "compensator deleted successful" });
     } catch (error) {
-        console.log("ERROR: Failed to DELETE silencer", error);
+        console.log("ERROR: Failed to DELETE compensator", error);
         return NextResponse.json(
-            { error: "Failed to DELETE silencer" },
+            { error: "Failed to DELETE compensator" },
             { status: 500 },
         );
     }
