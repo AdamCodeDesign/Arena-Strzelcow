@@ -34,27 +34,27 @@ export async function POST(request: Request) {
     }
 }
 
-// GET All scopes (READ)
+// GET All silencers (READ)
 export async function GET() {
     try {
-        const scopes = await prisma.scope.findMany({
+        const silencers = await prisma.silencer.findMany({
             include: {
                 guns: true,
             },
         });
 
-        if (scopes.length === 0) {
+        if (silencers.length === 0) {
             return NextResponse.json(
-                { message: "No scopes found" },
+                { message: "No silencers found" },
                 { status: 404 },
             );
         }
 
-        return NextResponse.json(scopes);
+        return NextResponse.json(silencers);
     } catch (error) {
-        console.error("ERROR: Unable to get all scopes", error);
+        console.error("ERROR: Unable to get all silencers", error);
         return NextResponse.json(
-            { error: "I can not GET ALL scopes" },
+            { error: "I can not GET ALL silencers" },
             { status: 500 },
         );
     }
