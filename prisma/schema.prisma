@@ -126,10 +126,11 @@ model Compensator {
 model Grip {
   id        Int      @id @default(autoincrement())
   name      String
+  type      String
   material  String
-  weight    Float
-  gunId     Int
-  gun       Gun      @relation(fields: [gunId], references: [id])
+  weight    Float?
+  gunId     Int?
+  gun       Gun?      @relation(fields: [gunId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

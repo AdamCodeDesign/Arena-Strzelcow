@@ -50,4 +50,6 @@ Postęp
 3. Competition CRUD zrobiony
 4. GUN CRUD zrobiony
 5. Scope CRUD zrobiony
-6. Zaczalem Silencer - POST zrobiony
+6. Silencer CRUD zrobiony
+7. Compensator CRUD zrobiony
+8. Zaczynam Grip
