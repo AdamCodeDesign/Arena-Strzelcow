@@ -32,7 +32,6 @@ model User {
   EventParticipants       EventParticipants[]
   CompetitionParticipants CompetitionParticipants[]
   Result                  Result[]
-  AvgResult               AvgResult[]
 }
 
 model Competition {
@@ -148,7 +147,7 @@ model Magazine {
 
 model Result {
   id            Int         @id @default(autoincrement())
-  score         Int
+  score         Float
   userId        Int
   gunId         Int
   competitionId Int
@@ -157,11 +156,4 @@ model Result {
   competition   Competition @relation(fields: [competitionId], references: [id])
 }
 
-model AvgResult {
-  id           Int      @id @default(autoincrement())
-  averageScore Float
-  userId       Int
-  user         User     @relation(fields: [userId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
+
