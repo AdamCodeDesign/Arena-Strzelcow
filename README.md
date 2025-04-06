@@ -52,4 +52,6 @@ Postęp
 5. Scope CRUD zrobiony
 6. Silencer CRUD zrobiony
 7. Compensator CRUD zrobiony
-8. Zaczynam Grip
+8. GRIP CRUD complete
+9. MAGAZINE CRUD complete
+10. Result CRUD complete
