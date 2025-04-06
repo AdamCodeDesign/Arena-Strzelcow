@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, type, material } = body;
+        const { name, type, material, weight } = body;
 
         if (!name || !type) {
             return NextResponse.json(
@@ -19,7 +19,8 @@ export async function POST(request: Request) {
             data: {
                 name,
                 type,
-                material: material ?? null,
+                material,
+                weight,
             },
             include: {
                 gun: true,
@@ -41,7 +42,7 @@ export async function GET() {
     try {
         const grips = await prisma.grip.findMany({
             include: {
-                guns: true,
+                gun: true,
             },
         });
 

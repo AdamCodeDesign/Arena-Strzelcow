@@ -127,7 +127,7 @@ model Grip {
   id        Int      @id @default(autoincrement())
   name      String
   type      String
-  material  String
+  material  String?
   weight    Float?
   gunId     Int?
   gun       Gun?      @relation(fields: [gunId], references: [id])

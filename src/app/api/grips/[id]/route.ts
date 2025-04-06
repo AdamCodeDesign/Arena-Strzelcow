@@ -7,124 +7,125 @@ export async function GET(
     { params }: { params: { id: string } },
 ) {
     try {
-        const compensatorId = Number(params.id);
+        const gripId = Number(params.id);
 
-        if (isNaN(compensatorId)) {
+        if (isNaN(gripId)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        const compensator = await prisma.compensator.findUnique({
-            where: { id: compensatorId },
+        const grip = await prisma.grip.findUnique({
+            where: { id: gripId },
             include: {
-                guns: true,
+                gun: true,
             },
         });
 
-        if (!compensator) {
+        if (!grip) {
             return NextResponse.json(
-                { error: "compensator not found" },
+                { error: "grip not found" },
                 { status: 404 },
             );
         }
 
-        return NextResponse.json(compensator);
+        return NextResponse.json(grip);
     } catch (error) {
-        console.error("Error fetching compensator:", error);
+        console.error("Error fetching grip:", error);
         return NextResponse.json(
-            { error: "Failed to fetch compensator" },
+            { error: "Failed to fetch grip" },
             { status: 500 },
         );
     }
 }
 
-// PUT - Update compensator by ID
+// PUT - Update grip by ID
 export async function PUT(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const compensatorId = Number(params.id);
+        const gripId = Number(params.id);
         const body = await request.json();
-        const { name, type, material } = body;
+        const { name, type, material, weight } = body;
 
-        // Sprawdzenie, czy ID compensator jest poprawne
-        if (isNaN(compensatorId)) {
+        // Sprawdzenie, czy ID grip jest poprawne
+        if (isNaN(gripId)) {
             return NextResponse.json(
-                { error: "Invalid compensator ID" },
+                { error: "Invalid grip ID" },
                 { status: 400 },
             );
         }
 
-        // Sprawdzenie, czy compensator istnieje
-        const existingCompensator = await prisma.compensator.findUnique({
-            where: { id: compensatorId },
+        // Sprawdzenie, czy grip istnieje
+        const existingGrip = await prisma.grip.findUnique({
+            where: { id: gripId },
         });
-        if (!existingCompensator) {
+        if (!existingGrip) {
             return NextResponse.json(
-                { error: "compensator not found" },
+                { error: "grip not found" },
                 { status: 404 },
             );
         }
 
-        // Aktualizacja compensator
-        const updatedCompensator = await prisma.compensator.update({
-            where: { id: compensatorId },
+        // Aktualizacja grip
+        const updatedGrip = await prisma.grip.update({
+            where: { id: gripId },
             data: {
                 name,
                 type,
                 material: material ?? null,
+                weight,
             },
             include: {
-                guns: true,
+                gun: true,
             },
         });
 
-        return NextResponse.json(updatedCompensator, { status: 200 });
+        return NextResponse.json(updatedGrip, { status: 200 });
     } catch (error) {
-        console.error("Error updating compensator:", error);
+        console.error("Error updating grip:", error);
         return NextResponse.json(
-            { error: "Failed to update compensator" },
+            { error: "Failed to update grip" },
             { status: 500 },
         );
     }
 }
 
-// Delete compensator by ID
+// Delete grip by ID
 
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const compensatorId = Number(params.id);
+        const gripId = Number(params.id);
 
-        if (isNaN(compensatorId)) {
+        if (isNaN(gripId)) {
             return NextResponse.json(
-                { error: "Invalid compensatorId" },
+                { error: "Invalid gripId" },
                 { status: 400 },
             );
         }
 
-        const compensator = await prisma.compensator.findUnique({
-            where: { id: compensatorId },
+        const grip = await prisma.grip.findUnique({
+            where: { id: gripId },
         });
 
-        if (!compensator) {
+        if (!grip) {
             return NextResponse.json(
-                { error: "I can NOT find compensator" },
+                { error: "I can NOT find grip" },
                 { status: 404 },
             );
         }
 
-        await prisma.compensator.delete({
-            where: { id: compensatorId },
+        await prisma.grip.delete({
+            where: { id: gripId },
         });
 
-        return NextResponse.json({ message: "compensator deleted successful" });
+        return NextResponse.json({ message: "grip deleted successful" });
     } catch (error) {
-        console.log("ERROR: Failed to DELETE compensator", error);
+        console.log("ERROR: Failed to DELETE grip", error);
         return NextResponse.json(
-            { error: "Failed to DELETE compensator" },
+            { error: "Failed to DELETE grip" },
             { status: 500 },
         );
     }
