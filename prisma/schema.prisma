@@ -97,7 +97,7 @@ model Scope {
   magnification Float? // Powiększenie celownika
   lensDiameter  Float? // Średnica soczewki
   length        Float? // Długość celownika
-  weight        Float? // Waga celownika
+  weight        Int? // Waga celownika
   guns          Gun[]    @relation("GunScopes") // Relacja do wielu broni
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -128,7 +128,7 @@ model Grip {
   name      String
   type      String
   material  String?
-  weight    Float?
+  weight    Int?
   gunId     Int?
   gun       Gun?      @relation(fields: [gunId], references: [id])
   createdAt DateTime @default(now())
@@ -138,8 +138,9 @@ model Grip {
 model Magazine {
   id        Int      @id @default(autoincrement())
   name      String
+  capacity  Int
   material  String
-  weight    Float
+  weight    Int?
   gun       Gun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
