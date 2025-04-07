@@ -62,7 +62,7 @@ export async function PUT(
             );
         }
 
-        const { name, type, distance, position, scope, eventId } =
+        const { name, type, description, distance, position, scope, eventId } =
             await request.json();
 
         const updatedcompetition = await prisma.competition.update({
@@ -70,6 +70,7 @@ export async function PUT(
             data: {
                 name: name.trim(),
                 type: type.trim(),
+                description,
                 distance: Number(distance),
                 position: position.trim(),
                 scope: Number(scope),

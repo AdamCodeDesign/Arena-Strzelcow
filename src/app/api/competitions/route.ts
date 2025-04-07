@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, type, distance, position, scope, eventId } = body;
+        const { name, type,description, distance, position, scope, eventId } = body;
 
         // Walidacja danych wejściowych
         const missingFields = [];
@@ -51,6 +51,7 @@ export async function POST(request: Request) {
             data: {
                 name: name.trim(),
                 type: type.trim(),
+                description,
                 distance: Number(distance),
                 position: position.trim(),
                 scope: Number(scope),
