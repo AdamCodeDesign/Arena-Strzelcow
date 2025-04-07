@@ -55,3 +55,5 @@ Postęp
 8. GRIP CRUD complete
 9. MAGAZINE CRUD complete
 10. Result CRUD complete
+11. Walidacja username i email zrobiona w USER
+12. Dodany model CLUB i CRUD do niego kompletny
