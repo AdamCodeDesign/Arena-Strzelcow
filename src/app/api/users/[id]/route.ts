@@ -31,7 +31,6 @@ export async function GET(
                 EventParticipants: true,
                 CompetitionParticipants: true,
                 Result: true,
-                AvgResult: true,
             },
         });
 
@@ -76,7 +75,6 @@ export async function PUT(
             EventParticipants,
             CompetitionParticipants,
             Result,
-            AvgResult,
         } = await request.json();
 
         // Weryfikacja, czy podano przynajmniej jedno pole do aktualizacji
@@ -88,12 +86,34 @@ export async function PUT(
             !competitions &&
             !EventParticipants &&
             !CompetitionParticipants &&
-            !Result &&
-            !AvgResult
+            !Result
         ) {
             return NextResponse.json(
                 { error: "At least one field to update is required" },
                 { status: 400 },
+            );
+        }
+
+        let userExists = false;
+
+        if (username || email) {
+            const existingUser = await prisma.user.findFirst({
+                where: {
+                    OR: [{ username: username }, { email: email }],
+                },
+            });
+
+            if (existingUser) {
+                userExists = true;
+            }
+        }
+
+        if (userExists) {
+            return NextResponse.json(
+                {
+                    error: "Username or email already exists. Use unique username or email",
+                },
+                { status: 404 },
             );
         }
 
@@ -147,14 +167,6 @@ export async function PUT(
                           set: [],
                           connect: Result.map((resultId: number) => ({
                               id: resultId,
-                          })),
-                      }
-                    : undefined,
-                AvgResult: AvgResult
-                    ? {
-                          set: [],
-                          connect: AvgResult.map((avgResultId: number) => ({
-                              id: avgResultId,
                           })),
                       }
                     : undefined,

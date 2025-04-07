@@ -11,7 +11,6 @@ export async function GET() {
                 EventParticipants: true,
                 CompetitionParticipants: true,
                 Result: true,
-                AvgResult: true,
             },
         }); // Pobieramy wszystkich użytkowników
 
@@ -41,6 +40,29 @@ export async function POST(request: Request) {
             return NextResponse.json(
                 { error: "Missing required fields" },
                 { status: 400 },
+            );
+        }
+
+        let userExists = false;
+
+        if (username || email) {
+            const existingUser = await prisma.user.findFirst({
+                where: {
+                    OR: [{ username: username }, { email: email }],
+                },
+            });
+
+            if (existingUser) {
+                userExists = true;
+            }
+        }
+
+        if (userExists) {
+            return NextResponse.json(
+                {
+                    error: "Username or email already exists. Use unique username or email",
+                },
+                { status: 404 },
             );
         }
 
