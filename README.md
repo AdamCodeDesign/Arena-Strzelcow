@@ -57,3 +57,5 @@ Postęp
 10. Result CRUD complete
 11. Walidacja username i email zrobiona w USER
 12. Dodany model CLUB i CRUD do niego kompletny
+13. Zaczalem event-participants ale zastanawiam sie czy jest mi to potrzebne
+

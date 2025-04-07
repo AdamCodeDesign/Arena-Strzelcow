@@ -20,7 +20,6 @@ export async function GET(
                 participants: true,
                 EventParticipants: true,
                 Result: true,
-                AvgResult: true,
             },
         });
 
