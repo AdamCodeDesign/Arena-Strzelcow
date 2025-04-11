@@ -1,0 +1,35 @@
+services:
+    app:
+        build: .
+        container_name: arena-strzelcow-app
+        ports:
+            - "3000:3000" # Przekierowanie portu 3000 na hosta
+        volumes:
+            - .:/app # Montowanie bieżącego folderu na kontenerze
+            - /app/node_modules # Zapewnienie, że node_modules są niezależne od hosta
+        depends_on:
+            - db # Aplikacja zależy od bazy danych
+        environment:
+            DATABASE_URL: postgres://postgres:Pingwin83@db:5433/arena # Zmienna środowiskowa do połączenia z bazą
+        command: npm run dev # Komenda startowa aplikacji (w trybie deweloperskim)
+
+    db:
+        image: postgres:17
+        container_name: arena-strzelcow-db
+        ports:
+            - "5433:5432" # Przekierowanie portu 5432 na hosta (dla PostgreSQL)
+        environment:
+            POSTGRES_USER: postgres # Nazwa użytkownika bazy danych
+            POSTGRES_PASSWORD: Pingwin83 # Hasło użytkownika bazy
+            POSTGRES_DB: arena # Nazwa bazy danych
+        volumes:
+            - postgres_data:/var/lib/postgresql/data # Wolumen do przechowywania danych bazy
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres", "-d", "arena"] # Test dostępności bazy danych
+            interval: 30s # Co 30 sekund
+            retries: 3 # 3 próby przed uznaniem za niezdrowy
+            start_period: 10s # Okres na początek testów
+            timeout: 5s # Limit czasu na wykonanie testu
+
+volumes:
+    postgres_data: # Wolumen przechowujący dane PostgreSQL
