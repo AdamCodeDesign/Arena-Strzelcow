@@ -4,20 +4,21 @@ services:
         container_name: arena-strzelcow-app
         ports:
             - "3000:3000" # Przekierowanie portu 3000 na hosta
+            - "5555:5555"
         volumes:
             - .:/app # Montowanie bieżącego folderu na kontenerze
             - /app/node_modules # Zapewnienie, że node_modules są niezależne od hosta
         depends_on:
             - db # Aplikacja zależy od bazy danych
-        environment:
-            DATABASE_URL: postgres://postgres:Pingwin83@db:5433/arena # Zmienna środowiskowa do połączenia z bazą
+        env_file:
+            - .env
         command: npm run dev # Komenda startowa aplikacji (w trybie deweloperskim)
 
     db:
         image: postgres:17
         container_name: arena-strzelcow-db
         ports:
-            - "5433:5432" # Przekierowanie portu 5432 na hosta (dla PostgreSQL)
+            - "5432:5432" # Przekierowanie portu 5432 na hosta (dla PostgreSQL)
         environment:
             POSTGRES_USER: postgres # Nazwa użytkownika bazy danych
             POSTGRES_PASSWORD: Pingwin83 # Hasło użytkownika bazy
