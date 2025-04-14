@@ -13,6 +13,7 @@ services:
         env_file:
             - .env
         command: npm run dev # Komenda startowa aplikacji (w trybie deweloperskim)
+        cpus: 1.0
 
     db:
         image: postgres:17

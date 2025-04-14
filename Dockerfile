@@ -1,14 +1,20 @@
-# Dockerfile
 FROM node:22-alpine
+
+# Zmniejsz rozmiar obrazu i przyspiesz instalację zależności
+ENV NODE_ENV=development
 
 WORKDIR /app
 
-COPY package*.json ./
+# Kopiuj tylko to, co potrzebne do zainstalowania zależności
+COPY package.json package-lock.json* ./
 
-RUN npm install
+# Zainstaluj zależności bez zbędnych dodatków
+RUN npm install --legacy-peer-deps
 
+# Dopiero teraz kopiuj resztę (lepsze cacheowanie)
 COPY . .
 
+# Generuj klienta Prisma
 RUN npx prisma generate
 
 EXPOSE 3000

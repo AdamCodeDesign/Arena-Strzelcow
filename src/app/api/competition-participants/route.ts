@@ -4,24 +4,24 @@ import { NextResponse } from "next/server";
 // GET all
 export async function GET() {
     try {
-        const participants = await prisma.eventParticipants.findMany({
+        const participants = await prisma.competitionParticipants.findMany({
             include: {
                 user: true,
-                event: true,
+                competition: true,
             },
         });
 
         if (participants.length === 0) {
             return NextResponse.json(
-                { message: "No event participants found" },
+                { message: "No competition participants found" },
                 { status: 404 },
             );
         }
         return NextResponse.json(participants);
     } catch (error) {
-        console.error("ERROR: Unable to get all event participants", error);
+        console.error("ERROR: Unable to get all competition participants", error);
         return NextResponse.json(
-            { error: "Failed to fetch event participants" },
+            { error: "Failed to fetch competition participants" },
             { status: 500 },
         );
     }
@@ -32,10 +32,10 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const userId = Number(body.userId);
-        const eventId = Number(body.eventId);
+        const competitionId = Number(body.competitionId);
 
-        const existingParticipant = await prisma.eventParticipants.findFirst({
-            where: { userId, eventId },
+        const existingParticipant = await prisma.competitionParticipants.findFirst({
+            where: { userId, competitionId },
         });
 
         if (existingParticipant) {
@@ -45,8 +45,8 @@ export async function POST(req: Request) {
             );
         }
 
-        const newParticipant = await prisma.eventParticipants.create({
-            data: { userId, eventId },
+        const newParticipant = await prisma.competitionParticipants.create({
+            data: { userId, competitionId },
         });
 
         return NextResponse.json(newParticipant, { status: 201 });
