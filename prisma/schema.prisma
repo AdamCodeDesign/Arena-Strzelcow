@@ -11,7 +11,7 @@ model Club {
   id          Int      @id @default(autoincrement())
   clubName    String   @unique
   description String
-  members     User[]   @relation("ClubMembers")
+  members     Profile[]   @relation("ClubMembers")
   events      Event[]  @relation("ClubEvents")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -32,14 +32,17 @@ model Event {
   updatedAt         DateTime            @updatedAt
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id                      Int                       @id @default(autoincrement())
   username                String                    @unique
   email                   String                    @unique
   passwordHash            String
   profile                 Profile?
-  clubId                  Int?
-  club                    Club?                     @relation("ClubMembers", fields: [clubId], references: [id])
   events                  Event[]                   @relation("EventParticipants")
   competitions            Competition[]             @relation("CompetitionParticipants")
   EventParticipants       EventParticipants[]
@@ -49,15 +52,20 @@ model User {
   updatedAt               DateTime                  @updatedAt
 }
 
+
 model Profile {
   id        Int     @id @default(autoincrement())
   userId    Int     @unique
   avatarUrl String?
   bio       String?
+  role      Role    @default(USER)
+  clubId    Int?
+  club      Club?   @relation("ClubMembers",fields: [clubId], references: [id])
   user      User    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 
 model Competition {

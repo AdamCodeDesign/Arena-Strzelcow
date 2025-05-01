@@ -68,6 +68,24 @@ export async function POST(req: Request) {
         return NextResponse.json(profile, { status: 201 });
     } catch (error) {
         console.error("ERROR creating profile:", error);
-        return NextResponse.json({ error: "Server error: creating profile" }, { status: 500 });
+        return NextResponse.json(
+            { error: "Server error: creating profile" },
+            { status: 500 },
+        );
+    }
+}
+
+export async function GET(req: NextRequest) {
+    try {
+        const profiles = await prisma.profile.findMany({
+            include: { user: true, club: true },
+        });
+        return NextResponse.json(profiles);
+    } catch (error) {
+        console.error("ERROR fetching profiles:", error);
+        return NextResponse.json(
+            { error: "Server error: fetching profiles" },
+            { status: 500 },
+        );
     }
 }

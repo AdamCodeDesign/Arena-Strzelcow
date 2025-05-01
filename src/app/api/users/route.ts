@@ -16,7 +16,7 @@ export async function GET() {
 
         if (users.length === 0) {
             return NextResponse.json(
-                { message: "No events found" },
+                { message: "No users found" },
                 { status: 404 },
             );
         }
