@@ -68,6 +68,6 @@ export async function POST(req: Request) {
         return NextResponse.json(profile, { status: 201 });
     } catch (error) {
         console.error("ERROR creating profile:", error);
-        return NextResponse.json({ error: "Server error" }, { status: 500 });
+        return NextResponse.json({ error: "Server error: creating profile" }, { status: 500 });
     }
 }

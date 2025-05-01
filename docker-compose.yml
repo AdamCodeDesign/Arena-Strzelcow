@@ -25,7 +25,8 @@ services:
             POSTGRES_PASSWORD: Pingwin83 # Hasło użytkownika bazy
             POSTGRES_DB: arena # Nazwa bazy danych
         volumes:
-            - postgres_data:/var/lib/postgresql/data # Wolumen do przechowywania danych bazy
+            - arena-strzelcow_postgres_data:/var/lib/postgresql/data
+        # Wolumen do przechowywania danych bazy
         healthcheck:
             test: ["CMD", "pg_isready", "-U", "postgres", "-d", "arena"] # Test dostępności bazy danych
             interval: 30s # Co 30 sekund
@@ -34,4 +35,6 @@ services:
             timeout: 5s # Limit czasu na wykonanie testu
 
 volumes:
-    postgres_data: # Wolumen przechowujący dane PostgreSQL
+    arena-strzelcow_postgres_data:
+        external: true
+    # Wolumen przechowujący dane PostgreSQL
