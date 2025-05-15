@@ -2,18 +2,25 @@
 import Image from 'next/image';  // Zaimportowanie Image z next/image
 import "../../styles/globals.css"; // Import Tailwind CSS
 
-function Avatar() {
+// src/components/Avatar.tsx
+type AvatarProps = {
+    name: string; // np. "Adam Leszczyk"
+  };
+  
+  function Avatar({ name }: AvatarProps) {
+    const getInitials = (name: string) =>
+      name
+        .split(" ")
+        .map((n) => n[0]?.toUpperCase())
+        .join("")
+        .slice(0, 2);
+  
     return (
-        <div className="flex justify-center items-center rounded-full w-24 h-24 bg-gray-300">
-            <Image
-                src="/avatars/3fc090a5-9047-4a53-b00c-317617602e95-falloutBoy.png" // Zmieniona ścieżka do obrazu
-                alt="avatar"
-                className="rounded-full"
-                width={96}  // Wartości w px (wielkość ikony)
-                height={96}  // Wartości w px (wielkość ikony)
-            />
-        </div>
+      <div className="flex justify-center items-center w-16 h-16 rounded-full bg-gray-600 text-white text-lg font-semibold">
+        {getInitials(name)}
+      </div>
     );
-}
-
-export default Avatar;
+  }
+  
+  export default Avatar;
+  

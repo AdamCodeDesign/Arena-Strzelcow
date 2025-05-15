@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { verifyJWT } from "@/lib/auth";
+
 
 // GET a single profile by dynamic id
 export async function GET(
@@ -40,7 +42,26 @@ export async function PATCH(
     { params }: { params: { id: string } },
 ) {
     try {
+        const authHeader = req.headers.get("authorization");
+        if (!authHeader?.startsWith("Bearer ")) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+        const token = authHeader.split(" ")[1];
+        const user = verifyJWT(token);
+        if (!user) {
+            return NextResponse.json(
+                { error: "Invalid token" },
+                { status: 403 },
+            );
+        }
+
         const id = Number(params.id);
+        if (user.userId !== id && user.role !== "ADMIN") {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
         const formData = await req.formData();
         const bio = formData.get("bio") as string | null;
         const role = formData.get("role") as "USER" | "ADMIN" | null;
