@@ -1,11 +1,12 @@
-
-import LoginPage from "./login/page";
+// import LoginPage from "./(auth)/login/page";
+import RegisterPage from "./(auth)/login/register/page";
 
 export default function HomePage() {
     return (
-        <main >
+        <main>
             {/* <Avatar name = "Adam Leszczyk"/> */}
-            <LoginPage/>
+            {/* <LoginPage /> */}
+            <RegisterPage/>
         </main>
     );
 }

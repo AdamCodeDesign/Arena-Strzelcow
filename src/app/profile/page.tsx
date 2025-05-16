@@ -2,6 +2,8 @@
 import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth";
 import LogoutButton from "@/components/ui/LogoutButton";
+import ProfileInfo from "@/components/ui/ProfileInfo";
+import Avatar from "@/components/ui/Avatar";
 
 export default async function ProfilePage() {
   const token = cookies().get("token")?.value;
@@ -17,8 +19,8 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-semibold mb-2">Witaj, {user.name}!</h1>
-      <p className="text-gray-600 mb-4">Email: {user.email}</p>
+      <Avatar name={user.name}/>
+      <ProfileInfo name={user.name} email={user.email}/>
       <LogoutButton />
     </div>
   );
