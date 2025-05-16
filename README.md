@@ -59,3 +59,5 @@ Postęp
 12. Dodany model CLUB i CRUD do niego kompletny
 13. Zaczalem event-participants ale zastanawiam sie czy jest mi to potrzebne
 14. POST dla profile, trzeba zrobic reszte crud
+15. Po zalogowaniu wyskakuje blad z bcrypt
+16. Blad poprawiony

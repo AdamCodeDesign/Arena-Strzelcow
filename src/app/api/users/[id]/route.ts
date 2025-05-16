@@ -69,7 +69,7 @@ export async function PUT(
         const {
             username,
             email,
-            passwordHash,
+            password,
             events,
             competitions,
             EventParticipants,
@@ -81,7 +81,7 @@ export async function PUT(
         if (
             !username &&
             !email &&
-            !passwordHash &&
+            !password &&
             !events &&
             !competitions &&
             !EventParticipants &&
@@ -123,7 +123,7 @@ export async function PUT(
             data: {
                 username,
                 email,
-                passwordHash,
+                password,
                 events: events
                     ? {
                           set: [], // Zerowanie istniejących powiązań

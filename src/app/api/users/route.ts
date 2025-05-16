@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma"; // Zaimportuj instancję Prisma
+import { hash } from "bcryptjs";
 
 // Fetching ALL USERS (READ)
 export async function GET() {
@@ -32,39 +33,32 @@ export async function GET() {
 }
 
 // Creating USER (CREATE)
+
 export async function POST(request: Request) {
     try {
-        const { username, email, passwordHash } = await request.json(); // Oczekujemy tych danych z body
+        const { username, email, password } = await request.json(); // <-- oczekujemy czystego hasła
 
-        if (!username || !email || !passwordHash) {
+        if (!username || !email || !password) {
             return NextResponse.json(
                 { error: "Missing required fields" },
                 { status: 400 },
             );
         }
 
-        let userExists = false;
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [{ username }, { email }],
+            },
+        });
 
-        if (username || email) {
-            const existingUser = await prisma.user.findFirst({
-                where: {
-                    OR: [{ username: username }, { email: email }],
-                },
-            });
-
-            if (existingUser) {
-                userExists = true;
-            }
-        }
-
-        if (userExists) {
+        if (existingUser) {
             return NextResponse.json(
-                {
-                    error: "Username or email already exists. Use unique username or email",
-                },
-                { status: 404 },
+                { error: "Username or email already exists" },
+                { status: 409 },
             );
         }
+
+        const passwordHash = await hash(password, 10); // <-- hashowanie tu!
 
         const newUser = await prisma.user.create({
             data: {
@@ -76,7 +70,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(newUser, { status: 201 });
     } catch (error) {
-        console.log("ERROR:Failed to create user", error);
+        console.error("ERROR: Failed to create user", error);
         return NextResponse.json(
             { error: "Failed to create user" },
             { status: 500 },

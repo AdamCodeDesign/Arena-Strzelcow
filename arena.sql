@@ -533,7 +533,7 @@ CREATE TABLE public."User" (
     id integer NOT NULL,
     username text NOT NULL,
     email text NOT NULL,
-    "passwordHash" text NOT NULL,
+    "password" text NOT NULL,
     "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updatedAt" timestamp(3) without time zone NOT NULL,
     "clubId" integer
@@ -854,7 +854,7 @@ COPY public."Silencer" (id, name, length, weight, "createdAt", "updatedAt") FROM
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."User" (id, username, email, "passwordHash", "createdAt", "updatedAt", "clubId") FROM stdin;
+COPY public."User" (id, username, email, "password", "createdAt", "updatedAt", "clubId") FROM stdin;
 1	jan_kowalski	jan@example.com	hashed1	2025-04-13 11:24:40.189	2025-04-13 11:24:40.189	\N
 2	anna_nowak	anna@example.com	hashed2	2025-04-13 11:25:00.848	2025-04-13 11:25:00.848	\N
 3	sharpshooter_01	shooter01@example.com	SecurePass123!	2025-04-14 15:02:36.417	2025-04-14 15:02:36.417	\N
