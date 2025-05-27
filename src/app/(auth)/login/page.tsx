@@ -46,13 +46,13 @@ export default function LoginPage() {
                     className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
                     {loading ? "Logowanie..." : "Zaloguj się"}
                 </button>
+                <div>
+                    <p>
+                        Nie masz konta?{" "}
+                        <Link href="/register">Zarejestruj się!</Link>
+                    </p>
+                </div>
             </form>
-            <div>
-                <p>
-                    Nie masz konta?{" "}
-                    <Link href="/register">Zarejestruj się!</Link>
-                </p>
-            </div>
         </>
     );
 }
