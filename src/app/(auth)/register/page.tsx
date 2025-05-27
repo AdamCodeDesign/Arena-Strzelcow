@@ -1,11 +1,12 @@
-// app/(auth)/register/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterPage() {
     const router = useRouter();
+    const { setUser } = useAuth(); // <- z kontekstu
     const [form, setForm] = useState({ username: "", email: "", password: "" });
     const [error, setError] = useState("");
 
@@ -23,7 +24,6 @@ export default function RegisterPage() {
         });
 
         if (res.ok) {
-            // Automatyczne logowanie
             const loginRes = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -34,13 +34,17 @@ export default function RegisterPage() {
             });
 
             if (loginRes.ok) {
-                router.push("/profile"); // albo inna strona dla zalogowanego
+                const meRes = await fetch("/api/me"); // pobierz aktualne dane
+                if (meRes.ok) {
+                    const userData = await meRes.json();
+                    setUser(userData); // aktualizujemy kontekst
+                    router.push("/profile");
+                } else {
+                    setError("Zalogowano, ale nie udało się pobrać danych użytkownika");
+                }
             } else {
                 const data = await loginRes.json();
-                setError(
-                    data.error ||
-                        "Rejestracja ok, ale logowanie się nie powiodło",
-                );
+                setError(data.error || "Logowanie się nie powiodło");
             }
         } else {
             const data = await res.json();
@@ -55,10 +59,10 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
                 <input
                     name="username"
-                    placeholder="Nazwa użytkownika"
+                    placeholder="Nazwa użytkownika lub pseudonim"
                     onChange={handleChange}
                     required
-                    className="input"
+                    className="w-full p-2 border rounded mb-4"
                 />
                 <input
                     name="email"
@@ -66,7 +70,7 @@ export default function RegisterPage() {
                     placeholder="Email"
                     onChange={handleChange}
                     required
-                    className="input"
+                    className="w-full p-2 border rounded mb-4"
                 />
                 <input
                     name="password"
@@ -74,9 +78,11 @@ export default function RegisterPage() {
                     placeholder="Hasło"
                     onChange={handleChange}
                     required
-                    className="input"
+                    className="w-full p-2 border rounded mb-4"
                 />
-                <button type="submit" className="btn">
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
                     Zarejestruj
                 </button>
             </form>

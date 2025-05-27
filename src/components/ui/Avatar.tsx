@@ -1,5 +1,4 @@
 // src/components/Avatar.tsx
-import "../../styles/globals.css"; // Import Tailwind CSS
 
 // src/components/Avatar.tsx
 type AvatarProps = {
